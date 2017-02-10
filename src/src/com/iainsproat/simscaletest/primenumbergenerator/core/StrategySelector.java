@@ -10,7 +10,7 @@ public class StrategySelector {
 		case "brute":
 			return new BruteForcePrimeNumberGenerator();
 		default:
-			throw new UnsupportedOperationException(String.format("The requested strategy,  %1, is not implemented", requestedStrategy));
+			throw new UnsupportedOperationException(String.format("The requested strategy,  %s, is not implemented", requestedStrategy));
 		}
 	}
 }
