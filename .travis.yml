@@ -3,4 +3,4 @@ language: java
 jdk:
   - oraclejdk8
 
-script: mvn test -B
+script: mvn test -B -f ./src/pom.xml
