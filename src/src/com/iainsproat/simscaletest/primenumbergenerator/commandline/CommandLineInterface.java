@@ -21,6 +21,14 @@ public class CommandLineInterface {
 	
 	public void execute(String[] args)
 	{
+		this.execute(args, System.out);
+	}
+	
+	/**
+	 * Overloaded to allow command line to be tested by injecting a PrintStream that can be tested.
+	 */
+	public void execute(String[] args, PrintStream out)
+	{
 		CommandLineParameters parameters = new CommandLineParameters();
 		new JCommander(parameters, args); //parsing the command line is delegated to the JCommander library, and the parameters object properties are set by it
 		PrimeNumberGeneratorStrategyClient client = new PrimeNumberGeneratorStrategyClient();
@@ -29,11 +37,11 @@ public class CommandLineInterface {
 		
 		PrimeNumberGeneratorStrategyClient.Result result = client.execute(parameters.strategy, parameters.lowerBound.intValue(), parameters.upperBound.intValue()); //TODO we're passing a list reference here.  It may be more memory efficient to change the method signature so a printstream is passed and written directly.  
 		
-		PrintOutput(System.out, result.getPrimeNumbers());
+		PrintOutput(out, result.getPrimeNumbers());
 	}
 	
 	/**
-	 * Prints a comma&space-delimited (e.g. ", ") list of integers to the printstream
+	 * Prints a comma&space-delimited (e.g. ", ") list of integers to the PrintStream
 	 * e.g. 3, 5, 7
 	 */
 	public void PrintOutput(PrintStream out, List<Integer> primes)
