@@ -29,7 +29,7 @@ public class PrimeNumberGeneratorStrategyClient {
 	public Result execute(PrimeNumberGeneratorStrategy strategy, int lowerBound, int upperBound)
 	{		
 		Instant start = Instant.now();
-		List<Integer> primes = strategy.Execute(lowerBound, upperBound);		
+		List<Integer> primes = strategy.execute(lowerBound, upperBound);		
 		Instant end = Instant.now();
 		
 		return new Result(start.getNano(), strategy.getClass().getSimpleName(), lowerBound, upperBound, primes, Duration.between(start, end).getNano());

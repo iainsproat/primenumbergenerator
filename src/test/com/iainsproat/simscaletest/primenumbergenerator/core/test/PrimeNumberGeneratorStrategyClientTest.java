@@ -24,7 +24,7 @@ public class PrimeNumberGeneratorStrategyClientTest {
 	public class MockPrimeNumberGeneratorStrategy implements PrimeNumberGeneratorStrategy
 	{
 		@Override
-		public List<Integer> Execute(int lowerBound, int upperBound) {
+		public List<Integer> execute(int lowerBound, int upperBound) {
 			try {
 				Thread.sleep(500);
 			} catch (InterruptedException e) {

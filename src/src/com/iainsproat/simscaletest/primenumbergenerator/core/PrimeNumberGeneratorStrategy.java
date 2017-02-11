@@ -10,5 +10,5 @@ import java.util.List;
  *
  */
 public interface PrimeNumberGeneratorStrategy {
-	public List<Integer> Execute(int lowerBound, int upperBound); 
+	public List<Integer> execute(int lowerBound, int upperBound); 
 }
