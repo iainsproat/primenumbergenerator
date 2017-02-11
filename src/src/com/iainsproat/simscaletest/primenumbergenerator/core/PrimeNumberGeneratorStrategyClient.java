@@ -40,51 +40,51 @@ public class PrimeNumberGeneratorStrategyClient {
 	 *
 	 */
 	public class Result{
-		private int _timeStamp; //FIXME this should be a GUID as timestamps are not guaranteed to be universally unique (despite it being in nanoseconds!).
-		private String _strategy;
-		private int _lowerBound;
-		private int _upperBound;
-		private List<Integer> _primes;
-		private int _duration;
+		private int timeStamp; //FIXME this should be a GUID as timestamps are not guaranteed to be universally unique (despite it being in nanoseconds!).
+		private String strategy;
+		private int lowerBound;
+		private int upperBound;
+		private List<Integer> primes;
+		private int duration;
 		
-		public Result(int timeStamp, String requestedStrategy, int lowerBound, int upperBound, List<Integer> primeNumbers, int executionDuration)
+		public Result(int __timeStamp, String __requestedStrategy, int __lowerBound, int __upperBound, List<Integer> __primeNumbers, int __executionDuration)
 		{
-			this._timeStamp = timeStamp;
-			this._strategy = requestedStrategy;
-			this._lowerBound = lowerBound;
-			this._upperBound = upperBound;
-			this._primes = primeNumbers;
-			this._duration = executionDuration;
+			this.timeStamp = __timeStamp;
+			this.strategy = __requestedStrategy;
+			this.lowerBound = __lowerBound;
+			this.upperBound = __upperBound;
+			this.primes = __primeNumbers;
+			this.duration = __executionDuration;
 		}
 		
 		public int getTimeStamp()
 		{
-			return this._timeStamp;
+			return this.timeStamp;
 		}
 		
 		public String getRequestedStrategy()
 		{
-			return this._strategy;
+			return this.strategy;
 		}
 		
 		public int getLowerBound()
 		{
-			return this._lowerBound;
+			return this.lowerBound;
 		}
 		
 		public int getUpperBound()
 		{
-			return this._upperBound;
+			return this.upperBound;
 		}
 		
 		public List<Integer> getPrimeNumbers()
 		{
-			return this._primes;
+			return this.primes;
 		}
 		
 		public int getExecutionDuration()
 		{
-			return this._duration;
+			return this.duration;
 		}
 	}
 }
