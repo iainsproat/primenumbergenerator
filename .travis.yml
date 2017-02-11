@@ -3,4 +3,6 @@ language: java
 jdk:
   - oraclejdk8
 
-script: mvn test -B -f ./src/pom.xml
+script:
+  - mvn test -B -f ./src/pom.xml
+  - mvn package -B -Dmaven.test.skip=true -f ./src/pom.xml 
