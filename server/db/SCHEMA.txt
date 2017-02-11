@@ -1,0 +1,11 @@
+CREATE TABLE `Calculations` (
+	`PrimaryKey`	INTEGER NOT NULL UNIQUE,
+	`TransactionID`	TEXT NOT NULL UNIQUE,
+	`TimeStamp`	INTEGER NOT NULL,
+	`Strategy`	TEXT,
+	`LowerBound`	INTEGER,
+	`UpperBound`	INTEGER,
+	`PrimeCount`	INTEGER,
+	`Duration`	INTEGER,
+	PRIMARY KEY(`PrimaryKey`)
+);
