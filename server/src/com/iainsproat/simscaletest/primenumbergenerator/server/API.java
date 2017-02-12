@@ -1,8 +1,9 @@
 package com.iainsproat.simscaletest.primenumbergenerator.server;
 
-import static spark.Spark.*;
 
-import com.iainsproat.simscaletest.primenumbergenerator.core.PrimeNumberGeneratorStrategyClient;
+import com.iainsproat.simscaletest.primenumbergenerator.server.controller.PrimeNumberGeneratorController;
+
+import spark.Spark;
 
 /**
  * Responsible for defining routes of the REST API
@@ -13,16 +14,10 @@ import com.iainsproat.simscaletest.primenumbergenerator.core.PrimeNumberGenerato
  */
 public class API {
 	public static void main(String[] args) {
-		get("/primes/:strategy", (req, res) -> {
-			PrimeNumberGeneratorStrategyClient client = new PrimeNumberGeneratorStrategyClient();
-			return client.execute(
-					req.params(":strategy"), 
-					req.queryMap("lower").integerValue(), 
-					req.queryMap("upper").integerValue());
-		}, new JsonTransformer());
-		
-		after((req, res) -> {
-			//save the data to a database
-		});
+		new PrimeNumberGeneratorController();
+		 
+		 Spark.exception(Exception.class, (exception, request, response) -> {
+			    exception.printStackTrace();
+			});
 	}
 }
