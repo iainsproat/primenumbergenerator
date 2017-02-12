@@ -20,6 +20,9 @@ The `--upper` or `-u` parameter expect a positive integer which is to be the low
 ### REST API
 
 1. Start the Webserver Java application
+
+    > java -jar target\primenumbergenerator.server-0.0.1-SNAPSHOT.jar
+    
 2. Send a GET request (or navigate your browser) to `http://localhost:4567/primes/brute?lower=2&upper=11`
 3. The server will respond with the following JSON formatted data:
 
