@@ -14,7 +14,39 @@
           <target>1.8</target>
         </configuration>
       </plugin>
+      <plugin>
+      	<!-- Build an executable JAR -->
+      	<groupId>org.apache.maven.plugins</groupId>
+      	<artifactId>maven-jar-plugin</artifactId>
+      	<version>3.0.2</version>
+      	<configuration>
+        	<archive>
+          		<manifest>
+            		<addClasspath>true</addClasspath>
+            		<mainClass>com.iainsproat.simscaletest.primenumbergenerator.server.API</mainClass>
+          		</manifest>
+        	</archive>
+      	</configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.0.0</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
+    <resources>
+     <resource>
+       <directory>db</directory>
+     </resource>
+   </resources>
   </build>
   <dependencies>
   	<dependency>
@@ -32,5 +64,15 @@
       <artifactId>sqlite-jdbc</artifactId>
       <version>3.16.1</version>
     </dependency>
+    <dependency>
+  		<groupId>org.slf4j</groupId>
+  		<artifactId>slf4j-simple</artifactId>
+  		<version>1.7.21</version>
+	</dependency>
+	<dependency>
+         <groupId>com.iainsproat.simscaletest</groupId>
+         <artifactId>primenumbergenerator</artifactId>
+         <version>0.0.1-SNAPSHOT</version>
+      </dependency>
   </dependencies>
 </project>
