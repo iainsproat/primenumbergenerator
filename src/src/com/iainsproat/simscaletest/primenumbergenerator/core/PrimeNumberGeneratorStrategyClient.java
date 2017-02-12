@@ -32,7 +32,7 @@ public class PrimeNumberGeneratorStrategyClient {
 		List<Integer> primes = strategy.execute(lowerBound, upperBound);		
 		Instant end = Instant.now();
 		
-		return new Result(start.getNano(), strategy.getClass().getSimpleName(), lowerBound, upperBound, primes, Duration.between(start, end).getNano());
+		return new Result(start.getEpochSecond(), strategy.getClass().getSimpleName(), lowerBound, upperBound, primes, Duration.between(start, end).getSeconds());
 	}
 	
 	/**
@@ -40,14 +40,14 @@ public class PrimeNumberGeneratorStrategyClient {
 	 *
 	 */
 	public class Result{
-		private int timeStamp; //FIXME this should be a GUID as timestamps are not guaranteed to be universally unique (despite it being in nanoseconds!).
+		private long timeStamp; //FIXME this should be a GUID as timestamps are not guaranteed to be universally unique (despite it being in nanoseconds!).
 		private String strategy;
 		private int lowerBound;
 		private int upperBound;
 		private List<Integer> primes;
-		private int duration;
+		private long duration;
 		
-		public Result(int __timeStamp, String __requestedStrategy, int __lowerBound, int __upperBound, List<Integer> __primeNumbers, int __executionDuration)
+		public Result(long __timeStamp, String __requestedStrategy, int __lowerBound, int __upperBound, List<Integer> __primeNumbers, long __executionDuration)
 		{
 			this.timeStamp = __timeStamp;
 			this.strategy = __requestedStrategy;
@@ -57,7 +57,7 @@ public class PrimeNumberGeneratorStrategyClient {
 			this.duration = __executionDuration;
 		}
 		
-		public int getTimeStamp()
+		public long getTimeStamp()
 		{
 			return this.timeStamp;
 		}
@@ -82,7 +82,7 @@ public class PrimeNumberGeneratorStrategyClient {
 			return this.primes;
 		}
 		
-		public int getExecutionDuration()
+		public long getExecutionDuration()
 		{
 			return this.duration;
 		}
