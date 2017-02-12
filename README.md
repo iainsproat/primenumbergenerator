@@ -22,7 +22,7 @@ The `--upper` or `-u` parameter expect a positive integer which is to be the low
 1. Start the Webserver Java application
 
     > java -jar target\primenumbergenerator.server-0.0.1-SNAPSHOT.jar
-    
+
 2. Send a GET request (or navigate your browser) to `http://localhost:4567/primes/brute?lower=2&upper=11`
 3. The server will respond with the following JSON formatted data:
 
@@ -42,10 +42,15 @@ The `--upper` or `-u` parameter expect a positive integer which is to be the low
 * Oracle JDK 8
 * Maven (version 3.6.1 or greater)
 
-### Build instructions
+### Build instructions for Command Line Application
 
 1. Run `mvn test -B -f ./src/pom.xml` to test
-2. Run `mvn package -B -Dmaven.test.skip=true -f ./src/pom.xml ` to produce a jar
+2. Run `mvn package -B -Dmaven.test.skip=true -f ./src/pom.xml ` to produce a jar for the commandline application
+
+### Build instructions for Web Server
+
+1. Run `mvn clean install -B -Dmaven.test.skip=true -f ./src/pom.xml` to build and install the dependency
+2. Run `mvn clean package -B -f ./server/pom.xml` to build and produce a jar for the web server
 
 This is currently automated by Travis CI, see `.travis.yml`
 
