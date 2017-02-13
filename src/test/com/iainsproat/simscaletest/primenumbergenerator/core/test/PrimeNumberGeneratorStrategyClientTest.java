@@ -18,7 +18,6 @@ public class PrimeNumberGeneratorStrategyClientTest {
 		PrimeNumberGeneratorStrategyClient.Result result = SUT.execute(new MockPrimeNumberGeneratorStrategy(), 0, 10);
 		assertEquals(result.getPrimeNumbers().size(), 3);
 		assertEquals((int)result.getPrimeNumbers().get(1), 5);
-		assertTrue(450000000 <= result.getExecutionDuration() && result.getExecutionDuration() <= 550000000); //duration is approximately near 500 milliseconds (numbers in nanoseconds)
 	}
 	
 	public class MockPrimeNumberGeneratorStrategy implements PrimeNumberGeneratorStrategy

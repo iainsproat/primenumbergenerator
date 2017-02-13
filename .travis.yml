@@ -5,4 +5,5 @@ jdk:
 
 script:
   - mvn test -B -f ./src/pom.xml
-  - mvn package -B -Dmaven.test.skip=true -f ./src/pom.xml 
+  - mvn clean install -B -Dmaven.test.skip=true -f ./src/pom.xml
+  - mvn clean package -B -f ./server/pom.xml

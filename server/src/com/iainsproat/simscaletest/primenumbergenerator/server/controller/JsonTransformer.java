@@ -1,4 +1,4 @@
-package com.iainsproat.simscaletest.primenumbergenerator.server;
+package com.iainsproat.simscaletest.primenumbergenerator.server.controller;
 
 import com.google.gson.Gson;
 
