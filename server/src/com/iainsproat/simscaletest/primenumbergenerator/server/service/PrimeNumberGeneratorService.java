@@ -12,6 +12,7 @@ public class PrimeNumberGeneratorService {
 	public Result calculatePrimes(String calculationStrategy, int lowerBound, int upperBound) {
 		PrimeNumberGeneratorStrategyClient client = new PrimeNumberGeneratorStrategyClient();
 		
+		//TODO should be dispatched asynchronously to a queue
 		PrimeNumberGeneratorStrategyClient.Result result = client.execute(
 				calculationStrategy, 
 				lowerBound, 

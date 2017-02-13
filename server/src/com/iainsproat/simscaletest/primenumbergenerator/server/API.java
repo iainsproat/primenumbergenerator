@@ -26,6 +26,7 @@ public class API {
 			    exception.printStackTrace();
 			});
 		 
+		 //FIXME I don't think this code is ever reached...
 		 //stop the web service
 		 try{
 			 logger.info("Closing web service");
