@@ -15,13 +15,15 @@ import spark.Spark;
  * creating and handling prime numbers 
  *
  */
-public class PrimeNumberGeneratorController {
+public class PrimeNumberGeneratorController implements AutoCloseable {
 	private Logger logger = LoggerFactory.getLogger(PrimeNumberGeneratorController.class);
 	
-	private CalculationRepository calculationRepository = new CalculationRepository();
+	private CalculationRepository calculationRepository;
 	
 	public PrimeNumberGeneratorController()
 	{
+		calculationRepository = new CalculationRepository();
+		
 		Spark.get("/primes/:strategy", (req, res) -> {
 			logger.info("GET /primes route called");
 			PrimeNumberGeneratorService service = new PrimeNumberGeneratorService();
@@ -34,6 +36,14 @@ public class PrimeNumberGeneratorController {
 			
 			return calculationResult;
 		}, new JsonTransformer());
+	}
+
+	@Override
+	public void close() throws Exception {
+		if(calculationRepository != null)
+		{
+			calculationRepository.close();
+		}
 	}
 
 	

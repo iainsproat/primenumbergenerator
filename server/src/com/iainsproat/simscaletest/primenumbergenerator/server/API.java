@@ -1,6 +1,9 @@
 package com.iainsproat.simscaletest.primenumbergenerator.server;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.iainsproat.simscaletest.primenumbergenerator.server.controller.PrimeNumberGeneratorController;
 
 import spark.Spark;
@@ -13,11 +16,26 @@ import spark.Spark;
  * See http://sparkjava.com/documentation.html for documentation of this framework. 
  */
 public class API {
+	
 	public static void main(String[] args) {
-		new PrimeNumberGeneratorController();
+		Logger logger = LoggerFactory.getLogger(API.class);
+		
+		PrimeNumberGeneratorController controller = new PrimeNumberGeneratorController();
 		 
 		 Spark.exception(Exception.class, (exception, request, response) -> {
 			    exception.printStackTrace();
 			});
+		 
+		 //stop the web service
+		 try{
+			 logger.info("Closing web service");
+			 Spark.stop();
+			 controller.close();
+		 }
+		 catch(Exception e)
+		 {
+			 logger.error(e.getMessage());
+			 logger.error(e.getStackTrace().toString());
+		 }
 	}
 }

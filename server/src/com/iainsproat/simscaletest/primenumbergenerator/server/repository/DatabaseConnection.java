@@ -2,7 +2,9 @@ package com.iainsproat.simscaletest.primenumbergenerator.server.repository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -10,42 +12,122 @@ import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteDataSource;
 import org.sqlite.SQLiteJDBCLoader;
 
+import com.google.gson.Gson;
 import com.iainsproat.simscaletest.primenumbergenerator.core.PrimeNumberGeneratorStrategyClient;
 
 /**
  * Responsible for connecting to and transacting with the sqlite database
  *
  */
-public class DatabaseConnection {
+public class DatabaseConnection implements AutoCloseable
+{
 	private Logger logger = LoggerFactory.getLogger(DatabaseConnection.class);
 	
-	public boolean addCalculation(PrimeNumberGeneratorStrategyClient.Result calculation)
+	private static DatabaseConnection singleton;
+	
+	private SQLiteDataSource dataSource;
+	private Connection connection;
+	
+	/**
+	 * Creates database as a singleton so database connection can be reused.
+	 * 
+	 * If it wasn't a singleton the connection would be created and disposed on every request to the webserver.
+	 * Additionally, Sqlite doesn't allow multi-threaded access so we don't lose any functionality by doing this (and no need for a connection pool).
+	 * 
+	 */
+	public static DatabaseConnection getInstance()
 	{
-		boolean initialize = false;
+		if(singleton == null) {
+			singleton = new DatabaseConnection();
+		}
+		
+		return singleton;
+	}
+	
+	private DatabaseConnection()
+	{
+		createDatabase();
+	}
+	
+	/**
+	 * Creates the connection to a jdbc database.
+	 * In this example it is an in memory sqlite database.
+	 */
+	private void createDatabase(){
+		logger.info("Creating database");
+		
 		try{
-			initialize = SQLiteJDBCLoader.initialize();
+			SQLiteJDBCLoader.initialize();
 		}
 		catch(Exception e)
 		{
 			logger.error(e.getMessage());
 			logger.error(e.getStackTrace().toString());
-			return false;
+			return;
 		}
 		
-		SQLiteDataSource dataSource = new SQLiteDataSource();
-		Connection conn = null;
+		dataSource = new SQLiteDataSource();
+		
+		try
+		{
+			dataSource.setUrl("jdbc:sqlite::memory:");
+			this.connection = dataSource.getConnection();
+			
+			createTables();
+		
+		}
+		catch(SQLException e)
+		{
+			logger.error("Failed to get connection from DataSource or create tables");
+			logger.error(e.getMessage());
+			logger.error(e.getStackTrace().toString());
+		}
+	}
+	
+	/**
+	 * Creates a single table 'Calculations'
+	 * @throws SQLException
+	 */
+	private void createTables() throws SQLException {
+		Statement statement = this.connection.createStatement();
+		String createTableSQL = "CREATE TABLE `Calculations` ("
+				+ "`PrimaryKey`	INTEGER NOT NULL UNIQUE,"
+				+ "`TransactionID`	TEXT NOT NULL UNIQUE,"
+				+ "`TimeStamp`	INTEGER NOT NULL,"
+				+ "`Strategy`	TEXT,"
+				+ "`LowerBound`	INTEGER,"
+				+ "`UpperBound`	INTEGER,"
+				+ "`PrimeCount`	INTEGER,"
+				+ "`Duration`	INTEGER,"
+				+ "PRIMARY KEY(`PrimaryKey`)"
+				+ ");";
+		
+		statement.executeUpdate(createTableSQL);
+		statement.close();
+	}
+
+	/**
+	 * Adds calculation result data to the underlying database.
+	 * If it fails it logs an error statement
+	 * @param calculation
+	 */
+	public void addCalculation(PrimeNumberGeneratorStrategyClient.Result calculation)
+	{
 		PreparedStatement prepared = null;
 		
 		try
 		{
-			dataSource.setUrl("jdbc:sqlite:/primenumbergenerator-db.db");
-			conn = dataSource.getConnection();
-			prepared = generateInsertStatementForCalculation(conn, calculation);
+			prepared = generateInsertStatementForCalculation(calculation);
 			
 			prepared.executeUpdate();
+			
+			//FIXME to demonstrate the data is saved correctly in this example we'll dump the entire database table to the console every time!!
+			printEntireCalculationsTable();
 		}
 		catch(SQLException e)
 		{
+			//FIXME we're just dumping the raw data to the log. Not secure & potential privacy breach.
+			logger.error("Failed to add calculation data to the database. Calculation data: %s", new Gson().toJson(calculation));
 			logger.error(e.getMessage());
 			logger.error(e.getStackTrace().toString());
 		}
@@ -53,10 +135,9 @@ public class DatabaseConnection {
 		{
 			try
 			{
-				if(prepared != null)
+				if(prepared != null){
 					prepared.close();
-				if(conn != null)
-					conn.close();
+				}
 			}
 			catch(Exception e)
 			{
@@ -64,14 +145,14 @@ public class DatabaseConnection {
 				logger.error(e.getStackTrace().toString());
 			}
 		}
-		
-		return initialize;
 	}
-	
-	protected PreparedStatement generateInsertStatementForCalculation(Connection conn, PrimeNumberGeneratorStrategyClient.Result calculation) throws SQLException
+
+	protected PreparedStatement generateInsertStatementForCalculation(PrimeNumberGeneratorStrategyClient.Result calculation) throws SQLException
 	{
-		PreparedStatement prepared =  conn.prepareStatement("INSERT INTO Calculations (TransactionID, TimeStamp, Strategy, LowerBound, UpperBound, PrimeCount, Duration) "
-				+ "VALUES (?, ?, ?, ?, ?, ?, ?)");
+		PreparedStatement prepared =  this.connection
+				.prepareStatement("INSERT INTO Calculations "
+						+ "(TransactionID, TimeStamp, Strategy, LowerBound, UpperBound, PrimeCount, Duration) "
+						+ "VALUES (?, ?, ?, ?, ?, ?, ?)");
 		prepared.setString(1, UUID.randomUUID().toString());
 		prepared.setLong(2, calculation.getTimeStamp());
 		prepared.setString(3, calculation.getRequestedStrategy());
@@ -81,6 +162,43 @@ public class DatabaseConnection {
 		prepared.setLong(7, calculation.getExecutionDuration());
 
 		return prepared;
+	}
+	
+	/**
+	 * This prints all the contents of the table
+	 * @throws SQLException 
+	 */
+	protected void printEntireCalculationsTable() throws SQLException {
+		Statement statement = this.connection.createStatement();
+		String sql = "SELECT * FROM Calculations";
+		ResultSet results = statement.executeQuery(sql);
+		while(results.next()){
+			logger.info(String.format("%s, %d, %s, %d, %d, %d, %d", 
+					results.getString("TransactionID"),
+					results.getLong("TimeStamp"),
+					results.getString("Strategy"),
+					results.getInt("LowerBound"),
+					results.getInt("UpperBound"),
+					results.getInt("PrimeCount"),
+					results.getLong("Duration")
+					));
+		}
+		
+		results.close();
+		statement.close();
+	}
 
+	@Override
+	public void close() throws Exception {
+		try
+		{
+			if(connection != null)
+				connection.close();
+		}
+		catch(Exception e)
+		{
+			logger.error(e.getMessage());
+			logger.error(e.getStackTrace().toString());
+		}
 	}
 }

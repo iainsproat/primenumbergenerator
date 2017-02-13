@@ -73,6 +73,7 @@
          <groupId>com.iainsproat.simscaletest</groupId>
          <artifactId>primenumbergenerator</artifactId>
          <version>0.0.1-SNAPSHOT</version>
+         <type>jar</type>
       </dependency>
   </dependencies>
 </project>
