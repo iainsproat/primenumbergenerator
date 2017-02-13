@@ -3,6 +3,10 @@ language: java
 jdk:
   - oraclejdk8
 
+before_script:
+  - mvn versions:set -DnewVersion=TRAVIS_TAG -f ./src/pom.xml
+  - mvn versions:set -DnewVersion=TRAVIS_TAG -f ./server/pom.xml
+
 script:
   - mvn test -B -f ./src/pom.xml
   - mvn clean install -B -Dmaven.test.skip=true -f ./src/pom.xml
