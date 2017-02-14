@@ -10,7 +10,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.iainsproat.simscaletest.primenumbergenerator.core.PrimeNumberGeneratorStrategy;
-import com.iainsproat.simscaletest.primenumbergenerator.core.generators.Naive1PrimeNumberGenerator;
+import com.iainsproat.simscaletest.primenumbergenerator.core.generators.*;
 
 public class PrimeNumberGeneratorImplementationsTest {
 
@@ -23,6 +23,7 @@ public class PrimeNumberGeneratorImplementationsTest {
 	public static void setUpBeforeClass() throws Exception {
 		primeNumberGenerators = new ArrayList<PrimeNumberGeneratorStrategy>();
 		primeNumberGenerators.add(new Naive1PrimeNumberGenerator());
+		primeNumberGenerators.add(new Naive2PrimeNumberGenerator());
 	}
 
 	@AfterClass

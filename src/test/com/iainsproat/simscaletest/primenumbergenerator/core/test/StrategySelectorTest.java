@@ -7,15 +7,22 @@ import org.junit.Test;
 
 import com.iainsproat.simscaletest.primenumbergenerator.core.PrimeNumberGeneratorStrategy;
 import com.iainsproat.simscaletest.primenumbergenerator.core.StrategySelector;
-import com.iainsproat.simscaletest.primenumbergenerator.core.generators.Naive1PrimeNumberGenerator;
+import com.iainsproat.simscaletest.primenumbergenerator.core.generators.*;
 
 public class StrategySelectorTest {
 
 	@Test
-	public void canSelectnaive1Strategy() {
+	public void canSelectNaive1Strategy() {
 
 		PrimeNumberGeneratorStrategy result = StrategySelector.selectStrategy("naive1");
 		assertThat(result, instanceOf(Naive1PrimeNumberGenerator.class));
+	}
+	
+	@Test
+	public void canSelectNaive2Strategy() {
+
+		PrimeNumberGeneratorStrategy result = StrategySelector.selectStrategy("naive2");
+		assertThat(result, instanceOf(Naive2PrimeNumberGenerator.class));
 	}
 	
 	@Test(expected = UnsupportedOperationException.class)
