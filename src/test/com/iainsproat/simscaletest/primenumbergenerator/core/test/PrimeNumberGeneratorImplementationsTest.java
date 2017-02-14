@@ -25,6 +25,7 @@ public class PrimeNumberGeneratorImplementationsTest {
 		primeNumberGenerators.add(new Naive1PrimeNumberGenerator());
 		primeNumberGenerators.add(new Naive2PrimeNumberGenerator());
 		primeNumberGenerators.add(new EratosthenesPrimeNumberGenerator());
+		primeNumberGenerators.add(new EratosthenesBitSetPrimeNumberGenerator());
 	}
 
 	@AfterClass

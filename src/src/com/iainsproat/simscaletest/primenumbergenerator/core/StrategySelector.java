@@ -15,6 +15,8 @@ public class StrategySelector {
 			return new Naive2PrimeNumberGenerator();
 		case "eratosthenes":
 			return new EratosthenesPrimeNumberGenerator();
+		case "eratosthenesbitset":
+			return new EratosthenesBitSetPrimeNumberGenerator();
 		default:
 			throw new UnsupportedOperationException(String.format("The requested strategy,  %s, is not implemented", requestedStrategy));
 		}
