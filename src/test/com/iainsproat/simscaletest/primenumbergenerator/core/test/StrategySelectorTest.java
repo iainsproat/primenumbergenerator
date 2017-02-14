@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import com.iainsproat.simscaletest.primenumbergenerator.core.PrimeNumberGeneratorStrategy;
 import com.iainsproat.simscaletest.primenumbergenerator.core.StrategySelector;
-import com.iainsproat.simscaletest.primenumbergenerator.core.Naive1PrimeNumberGenerator;
+import com.iainsproat.simscaletest.primenumbergenerator.core.generators.Naive1PrimeNumberGenerator;
 
 public class StrategySelectorTest {
 

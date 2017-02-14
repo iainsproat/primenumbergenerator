@@ -1,5 +1,7 @@
 package com.iainsproat.simscaletest.primenumbergenerator.core;
 
+import com.iainsproat.simscaletest.primenumbergenerator.core.generators.Naive1PrimeNumberGenerator;
+
 /**
  * Responsible for selecting the correct strategy given a string description
  */

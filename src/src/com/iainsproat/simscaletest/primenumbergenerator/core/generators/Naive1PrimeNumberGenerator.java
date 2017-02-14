@@ -1,7 +1,9 @@
-package com.iainsproat.simscaletest.primenumbergenerator.core;
+package com.iainsproat.simscaletest.primenumbergenerator.core.generators;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.iainsproat.simscaletest.primenumbergenerator.core.PrimeNumberGeneratorStrategy;
 
 /**
  * Very naive implementation.
