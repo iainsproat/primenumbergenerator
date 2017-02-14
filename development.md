@@ -8,6 +8,7 @@
 * [JCommander](http://jcommander.org/)
 * [Spark](http://sparkjava.com)
 * [Gson](https://github.com/google/gson)
+* [Sqlite](https://www.sqlite.org/)
 
 ## Project Layout
 
