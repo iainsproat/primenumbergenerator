@@ -19,19 +19,6 @@ public class PrimeNumberGeneratorStrategyClient {
 	 */
 	public Result execute(String requestedStrategy, int lowerBound, int upperBound)
 	{
-		//must be positive numbers
-		if(lowerBound < 0)
-			lowerBound = 0;
-		if(upperBound < 0)
-			upperBound = 0;
-		//upper bound should always be greater than lower bound.  Rather than failing, we'll be opinionated and swap the two.
-		if(lowerBound > upperBound)
-		{
-			int temp = lowerBound;
-			lowerBound = upperBound;
-			upperBound = temp;
-		}
-		
 		PrimeNumberGeneratorStrategy strategy = StrategySelector.selectStrategy(requestedStrategy);
 		return execute(strategy, lowerBound, upperBound);
 	}
@@ -41,11 +28,37 @@ public class PrimeNumberGeneratorStrategyClient {
 	 */
 	public Result execute(PrimeNumberGeneratorStrategy strategy, int lowerBound, int upperBound)
 	{		
+		//must be positive numbers
+		lowerBound = clampToZero(lowerBound);
+		upperBound = clampToZero(upperBound);
+		//upper bound should always be greater than lower bound.  Rather than failing, we'll be opinionated and swap the two.
+		if(lowerBound > upperBound)
+		{
+			int temp = lowerBound;
+			lowerBound = upperBound;
+			upperBound = temp;
+		}
+				
 		Instant start = Instant.now();
 		List<Integer> primes = strategy.execute(lowerBound, upperBound);		
 		Instant end = Instant.now();
 		
 		return new Result(start.getEpochSecond(), strategy.getClass().getSimpleName(), lowerBound, upperBound, primes, Duration.between(start, end).getSeconds());
+	}
+	
+	/**
+	 * Ensures the value can never be less than zero
+	 * @param value
+	 * @return
+	 */
+	private int clampToZero(int value)
+	{
+		if(value < 0)
+		{
+			return 0;
+		}
+		
+		return value;
 	}
 	
 	/**
