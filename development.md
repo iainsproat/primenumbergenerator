@@ -31,7 +31,7 @@ The `core` package utilises the strategy design pattern, which allows new algori
 
 1. Creating a class in the `core` package which implements the `PrimeNumberGeneratorStrategy` interface.
 2. Adding a branch to the `switch` statement in the `StrategySelector` class.  The string used here will be the string which the user can select from either the command line or the GET REST endpoint.
-3. Add the class to the List in the `@Before` decorated method in `PrimeNumberGeneratorImplementationTest` in the `test` folder
+3. Add the class to the `primeNumberGenerators` List in the `setUpBeforeClass` method in `PrimeNumberGeneratorImplementationsTest`, to be found in the `test` folder
 
 (NB. As a future enhancement, Reflection / Dependency Injection could be used to remove the need for steps 2 & 3)
 
