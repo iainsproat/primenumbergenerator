@@ -19,6 +19,19 @@ public class PrimeNumberGeneratorStrategyClient {
 	 */
 	public Result execute(String requestedStrategy, int lowerBound, int upperBound)
 	{
+		//must be positive numbers
+		if(lowerBound < 0)
+			lowerBound = 0;
+		if(upperBound < 0)
+			upperBound = 0;
+		//upper bound should always be greater than lower bound.  Rather than failing, we'll be opinionated and swap the two.
+		if(lowerBound > upperBound)
+		{
+			int temp = lowerBound;
+			lowerBound = upperBound;
+			upperBound = temp;
+		}
+		
 		PrimeNumberGeneratorStrategy strategy = StrategySelector.selectStrategy(requestedStrategy);
 		return execute(strategy, lowerBound, upperBound);
 	}

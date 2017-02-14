@@ -7,8 +7,8 @@ public class StrategySelector {
 	public static PrimeNumberGeneratorStrategy selectStrategy(String requestedStrategy)
 	{
 		switch(requestedStrategy.toLowerCase()){
-		case "brute":
-			return new BruteForcePrimeNumberGenerator();
+		case "naive1":
+			return new Naive1PrimeNumberGenerator();
 		default:
 			throw new UnsupportedOperationException(String.format("The requested strategy,  %s, is not implemented", requestedStrategy));
 		}
