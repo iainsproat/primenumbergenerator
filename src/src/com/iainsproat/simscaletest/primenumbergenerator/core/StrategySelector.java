@@ -13,6 +13,8 @@ public class StrategySelector {
 			return new Naive1PrimeNumberGenerator();
 		case "naive2":
 			return new Naive2PrimeNumberGenerator();
+		case "eratosthenes":
+			return new EratosthenesPrimeNumberGenerator();
 		default:
 			throw new UnsupportedOperationException(String.format("The requested strategy,  %s, is not implemented", requestedStrategy));
 		}
