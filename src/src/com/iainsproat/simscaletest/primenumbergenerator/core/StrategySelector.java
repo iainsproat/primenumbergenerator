@@ -1,5 +1,7 @@
 package com.iainsproat.simscaletest.primenumbergenerator.core;
 
+import com.iainsproat.simscaletest.primenumbergenerator.core.generators.*;
+
 /**
  * Responsible for selecting the correct strategy given a string description
  */
@@ -7,8 +9,10 @@ public class StrategySelector {
 	public static PrimeNumberGeneratorStrategy selectStrategy(String requestedStrategy)
 	{
 		switch(requestedStrategy.toLowerCase()){
-		case "brute":
-			return new BruteForcePrimeNumberGenerator();
+		case "naive1":
+			return new Naive1PrimeNumberGenerator();
+		case "naive2":
+			return new Naive2PrimeNumberGenerator();
 		default:
 			throw new UnsupportedOperationException(String.format("The requested strategy,  %s, is not implemented", requestedStrategy));
 		}

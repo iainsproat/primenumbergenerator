@@ -34,7 +34,7 @@ public class CommandLineInterfaceTest {
 	
 	@Test
 	public void testExecuteVerbose() {
-		String[] input = {"--strategy", "brute", "--lower", "2", "--upper", "11"};
+		String[] input = {"--strategy", "naive1", "--lower", "2", "--upper", "11"};
 
 		SUT.execute(input, new PrintStream(out));
 		
@@ -43,7 +43,7 @@ public class CommandLineInterfaceTest {
 	
 	@Test
 	public void testExecuteConcise() {
-		String[] input = {"-s", "brute", "-l", "2", "-u", "11"};
+		String[] input = {"-s", "naive1", "-l", "2", "-u", "11"};
 
 		SUT.execute(input, new PrintStream(out));
 		
