@@ -26,6 +26,9 @@ public class PrimeNumberGeneratorController implements AutoCloseable {
 		
 		Spark.get("/primes/:strategy", (req, res) -> {
 			logger.info("GET /primes route called");
+			
+			//TODO should set response header
+			//TODO should validate input and sanitise
 			PrimeNumberGeneratorService service = new PrimeNumberGeneratorService();
 			PrimeNumberGeneratorStrategyClient.Result calculationResult = service.calculatePrimes(
 					req.params(":strategy"), 
