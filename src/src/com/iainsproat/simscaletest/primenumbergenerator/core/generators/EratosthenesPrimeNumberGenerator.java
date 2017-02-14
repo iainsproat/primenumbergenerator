@@ -26,7 +26,7 @@ public class EratosthenesPrimeNumberGenerator implements PrimeNumberGeneratorStr
 		while(prime*prime <= upperBound){ //as per naive2 implementation, we only have to check primes up to the square route of the upperBound
 			markOffAllMultiplesOfPrime(isPrime, prime, upperBound);
 
-			int nextPrime = findNextAvailablePrime(prime, lowerBound, isPrime);
+			int nextPrime = findNextAvailablePrime(prime, upperBound, isPrime);
 			
 			if(prime == nextPrime){ // we couldn't find a new prime, so must have exhausted all candidates
 				break;
