@@ -2,6 +2,7 @@ package com.iainsproat.simscaletest.primenumbergenerator.core;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,9 +39,22 @@ public class PrimeNumberGeneratorStrategyClient {
 			lowerBound = upperBound;
 			upperBound = temp;
 		}
-				
+		
+		
+		
+		
+		List<Integer> primes;
 		Instant start = Instant.now();
-		List<Integer> primes = strategy.execute(lowerBound, upperBound);		
+		//if upper bound is 0, 1 or 2, then there are no primes.  Upper bound is itself excluded from the range, so an upper bound of 2 cannot return 2.
+		
+		if(upperBound < 3){
+			primes = new ArrayList<Integer>(0);
+		} else if(upperBound - lowerBound < 2){ //similarly, if both upperBound and lowerBound are the same number or adjacent then, as both are excluded from the range, then we can't find prime numbers 
+			primes = new ArrayList<Integer>(0);
+		} else {
+			primes = strategy.execute(lowerBound, upperBound);
+		}
+		
 		Instant end = Instant.now();
 		
 		return new Result(start.getEpochSecond(), strategy.getClass().getSimpleName(), lowerBound, upperBound, primes, Duration.between(start, end).getSeconds());
