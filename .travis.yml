@@ -4,7 +4,7 @@ jdk:
   - oraclejdk8
 
 before_script:
-  - if [ -n "TRAVIS_TAG" ]; mvn versions:set -DnewVersion=$TRAVIS_TAG -f ./server/pom.xml; fi
+  - if [ -n "$TRAVIS_TAG" ]; mvn versions:set -DnewVersion=$TRAVIS_TAG -f ./server/pom.xml; fi
 
 script:
   - mvn test -B -f ./src/pom.xml
