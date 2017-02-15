@@ -16,13 +16,13 @@ public class SundaramPrimeNumberGenerator implements PrimeNumberGeneratorStrateg
 		//{\displaystyle i+j+2ij\leq n} i + j + 2ij \le n
 		//The remaining numbers are doubled and incremented by one, giving a list of the odd prime numbers (i.e., all primes except 2) below 2n + 2
 		
-		BitSet isPrime = this.sieveOddNumbers(upperBound);
+		BitSet isPrime = this.sieve(upperBound);
 		
 
 		return calculatePrimesFromSieved(isPrime, lowerBound, upperBound);
 	}
 	
-	protected BitSet sieveOddNumbers(int upperBound)
+	protected BitSet sieve(int upperBound)
 	{
 		int sundaramLimit = (int)Math.ceil(upperBound/2.0); // only need to sieve half of the numbers
 		BitSet isPrime = new BitSet(sundaramLimit);
