@@ -9,10 +9,6 @@ public class Naive2PrimeNumberGenerator implements PrimeNumberGeneratorStrategy 
 
 	@Override
 	public List<Integer> execute(int lowerBound, int upperBound) {
-		if(upperBound < 2){
-			return new ArrayList<Integer>(0);
-		}
-		
 		List<Integer> result = new ArrayList<Integer>();
 		
 		//try every single possibility

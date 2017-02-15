@@ -25,6 +25,27 @@ public class StrategySelectorTest {
 		assertThat(result, instanceOf(Naive2PrimeNumberGenerator.class));
 	}
 	
+	@Test
+	public void canSelectEratosthenesStrategy() {
+
+		PrimeNumberGeneratorStrategy result = StrategySelector.selectStrategy("eratosthenes");
+		assertThat(result, instanceOf(EratosthenesPrimeNumberGenerator.class));
+	}
+	
+	@Test
+	public void canSelectEratosthenesBitSetStrategy() {
+
+		PrimeNumberGeneratorStrategy result = StrategySelector.selectStrategy("eratosthenesbitset");
+		assertThat(result, instanceOf(EratosthenesBitSetPrimeNumberGenerator.class));
+	}
+	
+	@Test
+	public void canSelectSundaramStrategy() {
+
+		PrimeNumberGeneratorStrategy result = StrategySelector.selectStrategy("sundaram");
+		assertThat(result, instanceOf(SundaramPrimeNumberGenerator.class));
+	}
+	
 	@Test(expected = UnsupportedOperationException.class)
 	public void cannotSelectIncorrectStrategy() {
 		StrategySelector.selectStrategy("");
