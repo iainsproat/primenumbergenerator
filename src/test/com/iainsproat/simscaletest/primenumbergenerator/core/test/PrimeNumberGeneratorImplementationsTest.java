@@ -15,10 +15,7 @@ import com.iainsproat.simscaletest.primenumbergenerator.core.generators.*;
 public class PrimeNumberGeneratorImplementationsTest {
 
 	protected static List<PrimeNumberGeneratorStrategy> primeNumberGenerators;
-	/**
-	 * 
-	 * @throws Exception
-	 */
+
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		primeNumberGenerators = new ArrayList<PrimeNumberGeneratorStrategy>();
@@ -26,6 +23,7 @@ public class PrimeNumberGeneratorImplementationsTest {
 		primeNumberGenerators.add(new Naive2PrimeNumberGenerator());
 		primeNumberGenerators.add(new EratosthenesPrimeNumberGenerator());
 		primeNumberGenerators.add(new EratosthenesBitSetPrimeNumberGenerator());
+		primeNumberGenerators.add(new SundaramPrimeNumberGenerator());
 	}
 
 	@AfterClass
