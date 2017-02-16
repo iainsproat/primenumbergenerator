@@ -7,7 +7,7 @@ import java.util.List;
 import com.iainsproat.simscaletest.primenumbergenerator.core.PrimeNumberGeneratorStrategy;
 /**
  * Sieve of eratosthenes
- * All non prime numbers 
+ * Parallel
  */
 public class EratosthenesParallelPrimeNumberGenerator implements PrimeNumberGeneratorStrategy {
 
@@ -27,13 +27,13 @@ public class EratosthenesParallelPrimeNumberGenerator implements PrimeNumberGene
 		while(prime*prime <= upperBound){ //as per naive2 implementation, we only have to check primes up to the square route of the upperBound
 			markOffAllMultiplesOfPrime(isPrime, prime, upperBound);
 
-			int nextPrime = findNextAvailablePrime(isPrime, prime, upperBound);
+			int nextCandidateForPrime = findNextAvailableUnmarkedNumber(isPrime, prime);
 			
-			if(nextPrime == -1){ // we couldn't find a new prime, so must have exhausted all candidates
+			if(nextCandidateForPrime == -1){ // we couldn't find a new prime, so must have exhausted all candidates
 				break;
 			}
 			
-			prime = nextPrime; //move on to next prime
+			prime = nextCandidateForPrime; //move on to next prime
 		}
 		
 		return convertBooleanArrayToIntegerList(isPrime, lowerBound, upperBound);
@@ -58,10 +58,10 @@ public class EratosthenesParallelPrimeNumberGenerator implements PrimeNumberGene
 	 * 
 	 * @return the next prime number, but if no further prime number is found it returns the starting prime number
 	 */
-	private int findNextAvailablePrime(BitSet isPrime, int prime, int upperBound)
+	private int findNextAvailableUnmarkedNumber(BitSet isPrime, int currentLocation)
 	{
 		//find next prime number in index. start at the next number from the last prime
-		return isPrime.nextSetBit(prime+1);
+		return isPrime.nextSetBit(currentLocation+1);
 	}
 	
 	/**
