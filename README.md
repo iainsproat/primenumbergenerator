@@ -1,5 +1,5 @@
 # Prime Number Generator
-Calculates prime numbers between two given numbers
+Calculates prime numbers in the range between two given numbers.
 
 ## Usage
 
