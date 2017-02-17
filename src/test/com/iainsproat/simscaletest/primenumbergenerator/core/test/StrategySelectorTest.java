@@ -46,6 +46,13 @@ public class StrategySelectorTest {
 		assertThat(result, instanceOf(SundaramPrimeNumberGenerator.class));
 	}
 	
+	@Test
+	public void canSelectEratosthenesParallelStrategy() {
+
+		PrimeNumberGeneratorStrategy result = StrategySelector.selectStrategy("eratosthenesparallel");
+		assertThat(result, instanceOf(EratosthenesParallelPrimeNumberGenerator.class));
+	}
+	
 	@Test(expected = UnsupportedOperationException.class)
 	public void cannotSelectIncorrectStrategy() {
 		StrategySelector.selectStrategy("");

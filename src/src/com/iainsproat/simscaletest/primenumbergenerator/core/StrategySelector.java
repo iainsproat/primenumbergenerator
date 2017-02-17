@@ -19,6 +19,8 @@ public class StrategySelector {
 			return new EratosthenesBitSetPrimeNumberGenerator();
 		case "sundaram":
 			return new SundaramPrimeNumberGenerator();
+		case "eratosthenesparallel":
+			return new EratosthenesParallelPrimeNumberGenerator();
 		default:
 			throw new UnsupportedOperationException(String.format("The requested strategy,  %s, is not implemented", requestedStrategy));
 		}
