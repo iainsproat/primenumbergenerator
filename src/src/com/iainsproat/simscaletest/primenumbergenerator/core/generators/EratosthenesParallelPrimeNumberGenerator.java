@@ -16,23 +16,70 @@ import java.util.concurrent.Future;
 import com.iainsproat.simscaletest.primenumbergenerator.core.PrimeNumberGeneratorStrategy;
 /**
  * Sieve of eratosthenes
- * Parallel
+ * Parallel implementation.
+ * BitSet is split into multiple chunks to allow multiple threads to work in parallel
+ * Chunking is required so that access to BitSet remains synchronised and only one thread has access at a time.
  */
 public class EratosthenesParallelPrimeNumberGenerator implements PrimeNumberGeneratorStrategy {
-
-// From Wikipedia:
-//  Create a list of consecutive integers from 2 through n: (2, 3, 4, ..., n).
-//	Initially, let p equal 2, the smallest prime number.
-//	Enumerate the multiples of p by counting to n from 2p in increments of p, and mark them in the list (these will be 2p, 3p, 4p, ...; the p itself should not be marked).
-//	Find the first number greater than p in the list that is not marked. If there was no such number, stop. Otherwise, let p now equal this new number (which is the next prime), and repeat from step 3.
-//	When the algorithm terminates, the numbers remaining not marked in the list are all the primes below n.
-	
 	private static int NUMBER_OF_PARALLEL_THREADS = 6;
-	private static int MAX_CHUNK_SIZE = 50;
+	private static int MAX_CHUNK_SIZE = 500;
 	
 	@Override
 	public List<Integer> execute(int lowerBound, int upperBound) {
 		
+		Map<Integer, BitSet> memoryChunks = partitionMemory(upperBound);
+		
+		final LinkedList<Integer> primesToSieve = new LinkedList<Integer>();
+		primesToSieve.add(2); //start by sieving 2
+		
+		ExecutorService exec = Executors.newFixedThreadPool(NUMBER_OF_PARALLEL_THREADS);
+		try{
+			while(primesToSieve.getFirst()*primesToSieve.getFirst() <= upperBound){ //we only have to check primes up to the square route of the upperBound
+//				System.out.println(String.format("primes : %s", primesToSieve.toString()));
+				List<Future> futures = sieveAllMemoryChunksInParallel(exec, memoryChunks, primesToSieve, upperBound);
+				
+				waitUntilAllThreadsFinished(futures);
+
+				
+				
+				createBatchOfNextUnsievedPrimes(primesToSieve, memoryChunks);
+
+				if(primesToSieve.size() == 0) //no further primes to sieve within the upper bound
+				{
+					break;
+				}
+			}
+		} catch (InterruptedException | ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			exec.shutdown();
+		}
+		
+		return convertMemoryChunksToIntegerList(memoryChunks, lowerBound, upperBound);
+	}
+
+
+	protected List<Future> sieveAllMemoryChunksInParallel(ExecutorService exec, Map<Integer, BitSet> memoryChunks, LinkedList<Integer> primesToSieve, int upperBound) {
+		List<Future> futures = new ArrayList<Future>(NUMBER_OF_PARALLEL_THREADS);
+		
+		memoryChunks.forEach((offset, chunk) -> {
+			futures.add(exec.submit(new Runnable() {
+				@Override
+				public void run() {
+					for(int prime : primesToSieve){
+						sieveAllMultiplesOfPrime(chunk, prime, offset, upperBound);
+//						System.out.println(String.format("Sieved %d from chunk from offset %d: %s ", prime, offset, chunk.toString()));
+					}
+				}
+			}));
+		});
+		
+		return futures;
+	}
+
+
+	private Map<Integer, BitSet> partitionMemory(int upperBound) {
 		Map<Integer, BitSet> memoryChunks = new HashMap<Integer, BitSet>();
 		
 		for(int i = 0; i * MAX_CHUNK_SIZE < upperBound; i++){
@@ -45,54 +92,7 @@ public class EratosthenesParallelPrimeNumberGenerator implements PrimeNumberGene
 			memoryChunks.put(i * MAX_CHUNK_SIZE, initializePrimeArray(chunkSize, i == 0));
 		}
 		
-		final LinkedList<Integer> primes = new LinkedList<Integer>();
-		primes.add(2);
-		
-		ExecutorService exec = Executors.newFixedThreadPool(NUMBER_OF_PARALLEL_THREADS);
-		try{
-			while(primes.getFirst()*primes.getFirst() <= upperBound){ //we only have to check primes up to the square route of the upperBound
-				System.out.println(String.format("primes : %s", primes.toString()));
-				List<Future> futures = new ArrayList<Future>(NUMBER_OF_PARALLEL_THREADS);
-				
-				memoryChunks.forEach((offset, chunk) -> {
-					System.out.println(String.format("there is a chunk at offset %d", offset));
-					futures.add(exec.submit(new Runnable() {
-						@Override
-						public void run() {
-							System.out.println(String.format("running %s from offset %d", primes.toString(), offset));
-							for(int prime : primes){
-								sieveAllMultiplesOfPrime(chunk, prime, offset, upperBound);
-								System.out.println(String.format("Sieved %d from chunk from offset %d: %s ", prime, offset, chunk.toString()));
-							}
-						}
-					}));
-				});
-				
-				waitUntilAllThreadsFinished(futures);
-
-				System.out.println(String.format("find next set of primes"));
-				int previousPrime = primes.getLast();
-				System.out.println(String.format("previousPrime : %d", previousPrime));
-				
-				createBatchOfNextUnsievedPrimes(primes, memoryChunks, previousPrime); //FIXME need to move into next chunk
-
-				if(primes.size() == 0) //no further primes to sieve within the upper bound
-				{
-					break; //TODO move on to next chunk
-				}
-			}
-		} catch (InterruptedException | ExecutionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			exec.shutdown();
-		}
-		
-		memoryChunks.forEach((k, v) -> {
-			System.out.println(String.format("offset %d, array %s", k, v.toString()));
-		});
-		
-		return convertMemoryChunksToIntegerList(memoryChunks, lowerBound, upperBound); //FIXME only gets the first chunk
+		return memoryChunks;
 	}
 
 
@@ -134,44 +134,56 @@ public class EratosthenesParallelPrimeNumberGenerator implements PrimeNumberGene
 		//isPrime is passed by reference, so no need to return anything
 	}
 	
-	
-	protected void createBatchOfNextUnsievedPrimes(LinkedList<Integer> primes, Map<Integer,BitSet> memoryChunks, Integer previousLocation) {
+	/**
+	 * 
+	 * @param primesToSieve the previous list of primes to sieve
+	 * @param memoryChunks 
+	 * @param previousLocation
+	 */
+	protected void createBatchOfNextUnsievedPrimes(LinkedList<Integer> primesToSieve, Map<Integer,BitSet> memoryChunks) {
+		int previousPrime = primesToSieve.getLast();
 		
-		while (!primes.isEmpty()) {
-			primes.removeFirst();
+		//clear the previously sieved primes from the list
+		while (!primesToSieve.isEmpty()) {
+			primesToSieve.removeFirst();
 	    }
 		
 		int i = 0;
-		for(Map.Entry<Integer, BitSet> entry : memoryChunks.entrySet()){
-			int offset = entry.getKey();
-			BitSet chunk = entry.getValue();
+		for(int offset : memoryChunks.keySet()){
+			if(i >= NUMBER_OF_PARALLEL_THREADS) //we've found all the necessary primes for this batch, so move on to the next
+				break;
+			
+			if(previousPrime > offset + MAX_CHUNK_SIZE) //the previous prime 
+				continue;
+			
+			BitSet chunk = memoryChunks.get(offset);
 			while(i < NUMBER_OF_PARALLEL_THREADS){
-				int candidateForPrime = findNextAvailableUnmarkedNumber(chunk, previousLocation, offset);
+				int candidateForPrime = findNextAvailableUnmarkedNumber(chunk, previousPrime, offset);
 
 				if(candidateForPrime - offset == -1){ // we couldn't find a new prime, so must have exhausted all candidates in this chunk
 					break;
 				}
 
-				if(isMultipleOfUnsievedPrime(primes, i, candidateForPrime))
+				if(isMultipleOfUnsievedPrime(primesToSieve, i, candidateForPrime))
 				{
 					//this candidate is a multiple of a prime that hasn't been sieved yet, so move to the next candidate
-					previousLocation = candidateForPrime;
+					previousPrime = candidateForPrime;
 					continue;
 				}
 
 				//none of the previously selected primes were factors of the next candidate, so we can add it.
-				primes.add(candidateForPrime);
+				primesToSieve.add(candidateForPrime);
 				i++;
 
-				previousLocation = candidateForPrime; //move on to find the next one.
+				previousPrime = candidateForPrime; //move on to find the next one.
 			}
 		}
 	}
 	
 	/**
-	 * Slightly brute force check to determine whether the next candidate is actually a prime,
-	 * or if it is a multiple of other candidate primes (and just hasn't been marked off yet). 
-	 * As we're only building a small number of primes, we'll accept the performance hit.
+	 * Check to determine whether the next candidate is actually a prime.
+	 * The candidate number might be a multiple of other candidate primes (which haven't been marked off yet). 
+	 * This is slightly brute force, but as we're only building a small number of primes, we'll accept the performance hit.
 	 * @return
 	 */
 	private boolean isMultipleOfUnsievedPrime(Queue<Integer> nextCandidates, int currentIndexOfNextCandidates, int nextCandidateForPrime) {
@@ -190,7 +202,7 @@ public class EratosthenesParallelPrimeNumberGenerator implements PrimeNumberGene
 
 
 	/**
-	 * Finds the next prime number in the array
+	 * Finds the next prime number in the BitSet
 	 * 
 	 * @return the next prime number, but if no further prime number is found it returns the starting prime number
 	 */
@@ -201,13 +213,16 @@ public class EratosthenesParallelPrimeNumberGenerator implements PrimeNumberGene
 	}
 	
 	/**
-	 * Converts the boolean array, where a true indicates a prime number, into a list of just the prime integers
+	 * Converts the Map of BitSets, where a true indicates a prime number, into an integer list of prime numbers
 	 */
 	protected List<Integer> convertMemoryChunksToIntegerList(Map<Integer, BitSet> memoryChunks, int lowerBound, int upperBound)
 	{
 		List<Integer> result = new ArrayList<Integer>();
 		
-		memoryChunks.forEach((offset, chunk) -> {
+		for(Map.Entry<Integer, BitSet> entry : memoryChunks.entrySet()){ //Java 8 Map.forEach does not guarantee order, so using the for loop to ensure primes are ordered.
+			int offset = entry.getKey();
+			BitSet chunk = entry.getValue();
+			
 			int firstPrime = lowerBound - offset + 1;
 			if(firstPrime < 0){
 				firstPrime = 0;
@@ -219,7 +234,7 @@ public class EratosthenesParallelPrimeNumberGenerator implements PrimeNumberGene
 					break; // or (i+1) would overflow
 				}
 			}
-		});
+		}
 		
 		System.out.println(String.format("Result : %s", result.toString()));
 		return result;
