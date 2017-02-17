@@ -28,7 +28,7 @@ The `--upper` or `-u` parameter expect a positive integer which is to be the low
 
     > java -jar target\primenumbergenerator.server-0.0.1-SNAPSHOT.jar
 
-2. Send a GET request (or navigate your browser) to `http://localhost:4567/primes/naive1?lower=2&upper=11`
+2. Send a GET request (using curl) `curl "http://localhost:4567/primes/naive1?lower=3&upper=20" -H "Accept: application/json"`
 3. The server will respond with the following JSON formatted data:
 
     > {
