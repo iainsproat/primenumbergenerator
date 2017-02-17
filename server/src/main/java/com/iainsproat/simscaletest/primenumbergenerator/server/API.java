@@ -1,9 +1,5 @@
 package com.iainsproat.simscaletest.primenumbergenerator.server;
 
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.iainsproat.simscaletest.primenumbergenerator.server.controller.PrimeNumberGeneratorController;
 
 import spark.Spark;
