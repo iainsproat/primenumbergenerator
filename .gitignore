@@ -12,9 +12,9 @@
 hs_err_pid*
 
 # Build target
-src/target/
+core/target/
 server/target/
 
 # Maven Shade files
-src/dependency-reduced-pom.xml
+core/dependency-reduced-pom.xml
 server/dependency-reduced-pom.xml

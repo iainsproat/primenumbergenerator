@@ -5,7 +5,7 @@ Calculates prime numbers in the range between two given numbers.
 
 ### Command line
 
-    > java -jar target\primenumbergenerator-0.0.1-SNAPSHOT.jar --strategy naive1 --lower 2 --upper 11
+    > java -jar core\target\primenumbergenerator-0.0.1-SNAPSHOT.jar --strategy naive1 --lower 2 --upper 11
     
 A comma delimited array of prime numbers between the lower and upper bounds are returned. In this example `3, 5, 7` would be returned.
     
@@ -26,7 +26,7 @@ The `--upper` or `-u` parameter expect a positive integer which is to be the low
 
 1. Start the Webserver Java application
 
-    > java -jar target\primenumbergenerator.server-0.0.1-SNAPSHOT.jar
+    > java -jar server\target\primenumbergenerator.server-0.0.1-SNAPSHOT.jar
 
 2. Send a GET request (using curl) `curl "http://localhost:4567/primes/naive1?lower=3&upper=20" -H "Accept: application/json"`
 3. The server will respond with the following JSON formatted data:
@@ -49,12 +49,12 @@ The `--upper` or `-u` parameter expect a positive integer which is to be the low
 
 ### Build instructions for Command Line Application
 
-1. Run `mvn test -B -f ./src/pom.xml` to test
-2. Run `mvn package -B -Dmaven.test.skip=true -f ./src/pom.xml ` to produce a jar for the commandline application
+1. Run `mvn test -B -f ./core/pom.xml` to test
+2. Run `mvn package -B -Dmaven.test.skip=true -f ./core/pom.xml ` to produce a jar for the commandline application
 
 ### Build instructions for Web Server
 
-1. Run `mvn clean install -B -Dmaven.test.skip=true -f ./src/pom.xml` to build and install the dependency
+1. Run `mvn clean install -B -Dmaven.test.skip=true -f ./core/pom.xml` to build and install the dependency
 2. Run `mvn clean package -B -f ./server/pom.xml` to build and produce a jar for the web server
 
 This is currently automated by [Travis CI](https://travis-ci.org/iainsproat/primenumbergenerator)
