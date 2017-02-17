@@ -1,8 +1,9 @@
 package com.iainsproat.simscaletest.primenumbergenerator.core.generators;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeoutException;
 
 import com.iainsproat.simscaletest.primenumbergenerator.core.PrimeNumberGeneratorStrategy;
 /**
@@ -23,11 +25,12 @@ import com.iainsproat.simscaletest.primenumbergenerator.core.PrimeNumberGenerato
 public class EratosthenesParallelPrimeNumberGenerator implements PrimeNumberGeneratorStrategy {
 	private static int NUMBER_OF_PARALLEL_THREADS = 6;
 	private static int MAX_CHUNK_SIZE = 500;
+	private static int BATCH_TIMEOUT_SECONDS = 1 * 60; //timeout for each batch
 	
 	@Override
 	public List<Integer> execute(int lowerBound, int upperBound) {
 		
-		Map<Integer, BitSet> memoryChunks = partitionMemory(upperBound);
+		Map<Integer, BitSet> memoryChunks = partitionMemory(lowerBound, upperBound);
 		
 		final LinkedList<Integer> primesToSieve = new LinkedList<Integer>();
 		primesToSieve.add(2); //start by sieving 2
@@ -38,9 +41,9 @@ public class EratosthenesParallelPrimeNumberGenerator implements PrimeNumberGene
 //				System.out.println(String.format("primes : %s", primesToSieve.toString()));
 				List<Future> futures = sieveAllMemoryChunksInParallel(exec, memoryChunks, primesToSieve, upperBound);
 				
-				waitUntilAllThreadsFinished(futures);
-
-				
+				// Forces this thread to wait until all sieves in the batch have completed.
+				// this is necessary as otherwise it's inefficient to try to find new primes if there are still some sieves to be applied
+				waitUntilAllThreadsFinished(futures, BATCH_TIMEOUT_SECONDS);
 				
 				createBatchOfNextUnsievedPrimes(primesToSieve, memoryChunks);
 
@@ -51,7 +54,10 @@ public class EratosthenesParallelPrimeNumberGenerator implements PrimeNumberGene
 			}
 		} catch (InterruptedException | ExecutionException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			e.printStackTrace();  //FIXME return error message
+		} catch (TimeoutException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace(); //FIXME return error message
 		} finally {
 			exec.shutdown();
 		}
@@ -79,24 +85,49 @@ public class EratosthenesParallelPrimeNumberGenerator implements PrimeNumberGene
 	}
 
 
-	private Map<Integer, BitSet> partitionMemory(int upperBound) {
+	/**
+	 * Creates multiple BitSets to represent a block of integers.  The blocks are created sequentially from 0 to the upper bound of the user defined range.
+	 * The blocks are stored in a map, where the key is the offset of that chunk's zero-index compared to absolute 0.
+	 * @param upperBound The user defined upper bound of the range
+	 * @return A map of each memory chunk keyed by its offset from 0
+	 */
+	private Map<Integer, BitSet> partitionMemory(int lowerBound, int upperBound) {
 		Map<Integer, BitSet> memoryChunks = new HashMap<Integer, BitSet>();
 		
 		for(int i = 0; i * MAX_CHUNK_SIZE < upperBound; i++){
 			int chunkSize = MAX_CHUNK_SIZE;
+			int offset = i * MAX_CHUNK_SIZE;
+			
+			//deal with the case where the last chunk in the range may not need to be the full maximum chunk size
 			int remainingRangeToChunk = upperBound - i * MAX_CHUNK_SIZE;
 			if(remainingRangeToChunk < MAX_CHUNK_SIZE){
 				chunkSize = remainingRangeToChunk;
 			}
 			
-			memoryChunks.put(i * MAX_CHUNK_SIZE, initializePrimeArray(chunkSize, i == 0));
+			//deal with the case where the chunk is above the square root of the upper bound (and so the primes within this chunk don't need to be applied to the sieve)
+			//but is below the lower bound of the range, so no values will ever be returned from this chunk.  In this case we don't need to create a chunk at all.
+			if((offset * offset > upperBound) && //start of chunk is greater than square route of upper bound
+					(offset + chunkSize < lowerBound)) //end of chunk is less than the lower bound
+			{
+				continue; //we can ignore this chunk
+			}
+			
+			memoryChunks.put(offset, initializeChunk(chunkSize, offset == 0));
 		}
 		
 		return memoryChunks;
 	}
 
 
-	private void waitUntilAllThreadsFinished(List<Future> futures) throws InterruptedException, ExecutionException {
+	/**
+	 * Continuously loops until all futures in the list are completed.
+	 * @param futures
+	 * @throws InterruptedException
+	 * @throws ExecutionException
+	 * @throws TimeoutException 
+	 */
+	private void waitUntilAllThreadsFinished(List<Future> futures, int timeOutInSeconds) throws InterruptedException, ExecutionException, TimeoutException {
+		Instant start = Instant.now();
 		boolean allFuturesFinished = false;
 		while(!allFuturesFinished){
 			allFuturesFinished = true;
@@ -105,6 +136,12 @@ public class EratosthenesParallelPrimeNumberGenerator implements PrimeNumberGene
 					allFuturesFinished = false;
 					break;
 				}
+			}
+			
+			Instant current = Instant.now();
+			long duration = Duration.between(start, current).getSeconds();
+			if(duration > timeOutInSeconds){
+				throw new TimeoutException("A batch of sieving undertaken in the parallel implementation of Sieve of Eratosthenes timed out");
 			}
 		}
 	}
@@ -118,7 +155,7 @@ public class EratosthenesParallelPrimeNumberGenerator implements PrimeNumberGene
 	 */
 	protected void sieveAllMultiplesOfPrime(BitSet isPrime, int prime, int offset, int upperBound)
 	{
-		System.out.println(String.format("Sieving %d from offset %d", prime, offset));
+//		System.out.println(String.format("Sieving %d from offset %d", prime, offset));
 		int relativeLocationOfFirstMultipleOfPrimeAfterOffset = 2*prime;
 		if(offset > 0){
 			if(offset % prime > 0){
@@ -236,11 +273,18 @@ public class EratosthenesParallelPrimeNumberGenerator implements PrimeNumberGene
 			}
 		}
 		
-		System.out.println(String.format("Result : %s", result.toString()));
+//		System.out.println(String.format("Result : %s", result.toString()));
 		return result;
 	}
 	
-	protected BitSet initializePrimeArray(int upperBound, boolean containsZeroAndOne)
+	/**
+	 * Initialize the chunk. For sieve of Eratosthenes this is done by setting all to true (i.e. assumes all integers are primes)
+	 * with the exception of 0 and 1, if this is the first chunk (i.e. offset of zero) 
+	 * @param upperBound
+	 * @param containsZeroAndOne
+	 * @return
+	 */
+	protected BitSet initializeChunk(int upperBound, boolean containsZeroAndOne)
 	{
 		BitSet primeArray = new BitSet(upperBound); //all initialized to false
 		if(containsZeroAndOne)
