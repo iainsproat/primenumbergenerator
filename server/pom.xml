@@ -21,7 +21,8 @@
   		<configuration>
     		<webXml>.\webapp\WEB-INF\web.xml</webXml>        
   		</configuration>
-		</plugin>
+  		<version>3.0.0</version>
+	  </plugin>
     </plugins>
   </build>
   <dependencies>
