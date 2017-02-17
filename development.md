@@ -12,7 +12,7 @@
 
 ## Project Layout
 
-    +---src
+    +---core
     |   +---src
     |   |   \---com.iainsproat.simscaletest.primenumbergenerator
     |   |       +---commandline
