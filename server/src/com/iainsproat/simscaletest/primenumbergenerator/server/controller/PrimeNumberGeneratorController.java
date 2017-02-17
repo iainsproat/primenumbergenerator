@@ -24,10 +24,11 @@ public class PrimeNumberGeneratorController implements AutoCloseable {
 	{
 		calculationRepository = new CalculationRepository();
 		
-		Spark.get("/primes/:strategy", (req, res) -> {
+		Spark.get("/primes/:strategy", "application/json", (req, res) -> {
 			logger.info("GET /primes route called");
 			
-			//TODO should set response header
+			res.type("application/json");
+			
 			//TODO should validate input and sanitise
 			PrimeNumberGeneratorService service = new PrimeNumberGeneratorService();
 			PrimeNumberGeneratorStrategyClient.Result calculationResult = service.calculatePrimes(
@@ -46,6 +47,22 @@ public class PrimeNumberGeneratorController implements AutoCloseable {
 		if(calculationRepository != null)
 		{
 			calculationRepository.close();
+		}
+	}
+	
+	public class ResponseError {
+		private String message;
+
+		public ResponseError(String message) {
+			this.message = message;
+		}
+
+		public ResponseError(Exception e) {
+			this.message = e.getMessage();
+		}
+
+		public String getMessage() {
+			return this.message;
 		}
 	}
 
