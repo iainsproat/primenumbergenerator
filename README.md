@@ -18,9 +18,9 @@ The `--strategy` or `-s` parameter is used to select the algorithm for calculati
 * `eratosthenesparallel`, parallel implementation of Sieve of Eratosthenes
 * `sundaram`, Sieve of Sundaram
 
-The `--lower` or `-l` parameter expect a positive integer which is to be the lower bound of the range.
+The `--lower` or `-l` parameter expect a positive integer which is to be the lower bound of the range.  This value is excluded from the range.
 
-The `--upper` or `-u` parameter expect a positive integer which is to be the lower bound of the range.
+The `--upper` or `-u` parameter expect a positive integer which is to be the lower bound of the range.  This value is excluded from the range.
 
 ### REST API
 
