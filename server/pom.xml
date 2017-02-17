@@ -31,15 +31,12 @@
     	<artifactId>spark-core</artifactId>
     	<version>2.5.5</version>
     	<exclusions>
+
             <exclusion>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-server</artifactId>
+            	<artifactId>javax.servlet-api</artifactId>
+            	<groupId>javax.servlet</groupId>
             </exclusion>
-            <exclusion>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-webapp</artifactId>
-            </exclusion>
-        </exclusions>
+    	</exclusions>
 	</dependency>
 	<dependency>
     	<groupId>com.google.code.gson</groupId>
