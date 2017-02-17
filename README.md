@@ -15,6 +15,7 @@ The `--strategy` or `-s` parameter is used to select the algorithm for calculati
 * `naive2`, a slightly less naive brute force algorithm
 * `eratosthenes`, Sieve of Eratosthenes using a boolean array
 * `eratosthenesbitset`, Sieve of Eratosthenes using a BitSet array
+* `eratosthenesparallel`, parallel implementation of Sieve of Eratosthenes
 * `sundaram`, Sieve of Sundaram
 
 The `--lower` or `-l` parameter expect a positive integer which is to be the lower bound of the range.
