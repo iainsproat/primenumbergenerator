@@ -4,6 +4,7 @@ import java.io.PrintStream;
 import java.util.List;
 
 import com.beust.jcommander.JCommander;
+import com.beust.jcommander.ParameterException;
 import com.iainsproat.simscaletest.primenumbergenerator.core.PrimeNumberGeneratorStrategyClient;
 
 /**
@@ -30,10 +31,14 @@ public class CommandLineInterface {
 	public void execute(String[] args, PrintStream out)
 	{
 		CommandLineParameters parameters = new CommandLineParameters();
-		new JCommander(parameters, args); //parsing the command line is delegated to the JCommander library, and the parameters object properties are set by it
-		PrimeNumberGeneratorStrategyClient client = new PrimeNumberGeneratorStrategyClient();
+		try{
+			new JCommander(parameters, args); //parsing the command line is delegated to the JCommander library, and the parameters object properties are set by it
+		}
+		catch(ParameterException e){
+			System.out.println(String.format("Error: %s", e.getMessage()));
+		}
 		
-		//TODO check for bad parameters
+		PrimeNumberGeneratorStrategyClient client = new PrimeNumberGeneratorStrategyClient();
 		
 		PrimeNumberGeneratorStrategyClient.Result result = client.execute(parameters.strategy, parameters.lowerBound.intValue(), parameters.upperBound.intValue()); //TODO we're passing a list reference here.  It may be more memory efficient to change the method signature so a printstream is passed and written directly.  
 		
