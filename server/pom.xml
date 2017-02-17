@@ -3,6 +3,7 @@
   <groupId>com.iainsproat.simscaletest</groupId>
   <artifactId>primenumbergenerator.server</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  <packaging>war</packaging>
   <build>
     <sourceDirectory>src</sourceDirectory>
     <plugins>
@@ -14,39 +15,14 @@
           <target>1.8</target>
         </configuration>
       </plugin>
-      <plugin>
-      	<!-- Build an executable JAR -->
-      	<groupId>org.apache.maven.plugins</groupId>
-      	<artifactId>maven-jar-plugin</artifactId>
-      	<version>3.0.2</version>
-      	<configuration>
-        	<archive>
-          		<manifest>
-            		<addClasspath>true</addClasspath>
-            		<mainClass>com.iainsproat.simscaletest.primenumbergenerator.server.API</mainClass>
-          		</manifest>
-        	</archive>
-      	</configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <version>3.0.0</version>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
+      <plugin>            
+ 		<groupId>org.apache.maven.plugins</groupId>
+  		<artifactId>maven-war-plugin</artifactId>
+  		<configuration>
+    		<webXml>.\webapp\WEB-INF\web.xml</webXml>        
+  		</configuration>
+		</plugin>
     </plugins>
-    <resources>
-     <resource>
-       <directory>db</directory>
-     </resource>
-   </resources>
   </build>
   <dependencies>
   	<dependency>
