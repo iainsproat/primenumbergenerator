@@ -112,5 +112,22 @@ public class PrimeNumberGeneratorImplementationsTest {
 					1999, (int)result.get(result.size() - 1));
 		}
 	}
+	
+	/**
+	 * This is used to test parallel implementations where the lower bound is greater than sqrt of the upper bound
+	 */
+	@Test
+	public void canCalculateWhereLowerBoundIsGreaterThanSqrtOfUpperBound(){
+		for(PrimeNumberGeneratorStrategy SUT : primeNumberGenerators)
+		{
+			List<Integer> result = SUT.execute(1800, 2000);
+			assertEquals(String.format("canCalculateWhereLowerBoundIsGreaterThanSqrtOfUpperBound failed by %s - incorrect size", SUT.getClass().getSimpleName()),
+					25, result.size());
+			assertEquals(String.format("canCalculateWhereLowerBoundIsGreaterThanSqrtOfUpperBound failed by %s - should contain 1801", SUT.getClass().getSimpleName()),
+					1801, (int)result.get(0));
+			assertEquals(String.format("canCalculateWhereLowerBoundIsGreaterThanSqrtOfUpperBound failed by %s - should contain 1999", SUT.getClass().getSimpleName()),
+					1999, (int)result.get(result.size() - 1));
+		}
+	}
 
 }
