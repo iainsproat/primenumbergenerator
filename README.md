@@ -57,7 +57,7 @@ The `--upper` or `-u` parameter expect a positive integer which is to be the low
 1. Run `mvn clean install -B -Dmaven.test.skip=true -f ./src/pom.xml` to build and install the dependency
 2. Run `mvn clean package -B -f ./server/pom.xml` to build and produce a jar for the web server
 
-This is currently automated by Travis CI, see `.travis.yml`
+This is currently automated by [Travis CI](https://travis-ci.org/iainsproat/primenumbergenerator)
 
 ## Development
 
