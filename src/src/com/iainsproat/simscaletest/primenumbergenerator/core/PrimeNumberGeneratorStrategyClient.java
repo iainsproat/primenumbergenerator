@@ -20,8 +20,12 @@ public class PrimeNumberGeneratorStrategyClient {
 	 */
 	public Result execute(String requestedStrategy, int lowerBound, int upperBound)
 	{
-		PrimeNumberGeneratorStrategy strategy = StrategySelector.selectStrategy(requestedStrategy);
-		return execute(strategy, lowerBound, upperBound);
+		try {
+			PrimeNumberGeneratorStrategy strategy = StrategySelector.selectStrategy(requestedStrategy);
+			return execute(strategy, lowerBound, upperBound);
+		} catch(Exception e) {
+			return new Result(requestedStrategy, lowerBound, upperBound, e.getMessage(), e.getStackTrace().toString());
+		}
 	}
 	
 	/**
@@ -55,9 +59,13 @@ public class PrimeNumberGeneratorStrategyClient {
 			primes = strategy.execute(lowerBound, upperBound);
 		}
 		
-		Instant end = Instant.now();
+		try {
+			Instant end = Instant.now();
 		
-		return new Result(start.getEpochSecond(), strategy.getClass().getSimpleName(), lowerBound, upperBound, primes, Duration.between(start, end).getSeconds());
+			return new Result(start.getEpochSecond(), strategy.getClass().getSimpleName(), lowerBound, upperBound, primes, Duration.between(start, end).getSeconds());
+		} catch(Exception e) {
+			return new Result(strategy.getClass().getSimpleName(), lowerBound, upperBound, e.getMessage(), e.getStackTrace().toString());
+		}
 	}
 	
 	/**
@@ -86,6 +94,19 @@ public class PrimeNumberGeneratorStrategyClient {
 		private int upperBound;
 		private List<Integer> primes;
 		private long duration;
+		private List<String> errors;
+		
+		public Result(String __requestedStrategy, int __lowerBound, int __upperBound, String... __errors)
+		{
+			this.strategy = __requestedStrategy;
+			this.lowerBound = __lowerBound;
+			this.upperBound = __upperBound;
+			if(__errors != null){
+				this.errors = new ArrayList<String>(__errors.length);
+				for(String error : __errors)
+					this.errors.add(error);
+			}
+		}
 		
 		public Result(long __timeStamp, String __requestedStrategy, int __lowerBound, int __upperBound, List<Integer> __primeNumbers, long __executionDuration)
 		{
@@ -125,6 +146,16 @@ public class PrimeNumberGeneratorStrategyClient {
 		public long getExecutionDuration()
 		{
 			return this.duration;
+		}
+		
+		public boolean hasError()
+		{
+			return this.errors != null && this.errors.size() > 0;
+		}
+		
+		public List<String> getErrors()
+		{
+			return this.errors;
 		}
 	}
 }

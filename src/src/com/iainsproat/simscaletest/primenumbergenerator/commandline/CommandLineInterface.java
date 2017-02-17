@@ -31,18 +31,30 @@ public class CommandLineInterface {
 	public void execute(String[] args, PrintStream out)
 	{
 		CommandLineParameters parameters = new CommandLineParameters();
-		try{
+		try {
 			new JCommander(parameters, args); //parsing the command line is delegated to the JCommander library, and the parameters object properties are set by it
+
+			PrimeNumberGeneratorStrategyClient client = new PrimeNumberGeneratorStrategyClient();
+
+			PrimeNumberGeneratorStrategyClient.Result result = client.execute(parameters.strategy, parameters.lowerBound.intValue(), parameters.upperBound.intValue()); //TODO we're passing a list reference here.  It may be more memory efficient to change the method signature so a printstream is passed and written directly.  
+
+			//print results to output
+			if(result.hasError()){
+				out.println(String.format("An error was encountered when trying to execute the %s strategy for range %d to %d", 
+						parameters.strategy, 
+						parameters.lowerBound.intValue(), 
+						parameters.upperBound.intValue()));
+				for(String error : result.getErrors()){
+					out.println(error);
+				}
+			} else {
+				PrintOutput(out, result.getPrimeNumbers());
+			}
+		
 		}
 		catch(ParameterException e){
-			System.out.println(String.format("Error: %s", e.getMessage()));
+			out.println(String.format("Error: %s", e.getMessage()));
 		}
-		
-		PrimeNumberGeneratorStrategyClient client = new PrimeNumberGeneratorStrategyClient();
-		
-		PrimeNumberGeneratorStrategyClient.Result result = client.execute(parameters.strategy, parameters.lowerBound.intValue(), parameters.upperBound.intValue()); //TODO we're passing a list reference here.  It may be more memory efficient to change the method signature so a printstream is passed and written directly.  
-		
-		PrintOutput(out, result.getPrimeNumbers());
 	}
 	
 	/**
