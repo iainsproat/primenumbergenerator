@@ -99,6 +99,7 @@ public class DatabaseConnection implements AutoCloseable
 				+ "`UpperBound`	INTEGER,"
 				+ "`PrimeCount`	INTEGER,"
 				+ "`Duration`	INTEGER,"
+				+ "`Errors`		TEXT,"
 				+ "PRIMARY KEY(`PrimaryKey`)"
 				+ ");";
 		
@@ -151,8 +152,8 @@ public class DatabaseConnection implements AutoCloseable
 	{
 		PreparedStatement prepared =  this.connection
 				.prepareStatement("INSERT INTO Calculations "
-						+ "(TransactionID, TimeStamp, Strategy, LowerBound, UpperBound, PrimeCount, Duration) "
-						+ "VALUES (?, ?, ?, ?, ?, ?, ?)");
+						+ "(TransactionID, TimeStamp, Strategy, LowerBound, UpperBound, PrimeCount, Duration, Errors) "
+						+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 		prepared.setString(1, UUID.randomUUID().toString());
 		prepared.setLong(2, calculation.getTimeStamp());
 		prepared.setString(3, calculation.getRequestedStrategy());
@@ -160,7 +161,11 @@ public class DatabaseConnection implements AutoCloseable
 		prepared.setInt(5, calculation.getUpperBound());
 		prepared.setInt(6, calculation.getPrimeNumbers().size());
 		prepared.setLong(7, calculation.getExecutionDuration());
-
+		if(calculation.getErrors() == null){
+			prepared.setString(8, "");
+		}else{
+			prepared.setString(8, String.join("; ", calculation.getErrors()));
+		}
 		return prepared;
 	}
 	
