@@ -6,5 +6,5 @@ jdk:
 script:
   - mvn clean test -B -f ./core/pom.xml
   - mvn clean install -B -Dmaven.test.skip=true -f ./core/pom.xml
-  - mvn clean war:war tomcat:run -f ./server/pom.xml
+  - mvn clean war:war tomcat7:run -f ./server/pom.xml
   - mvn tomcat:shutdown

@@ -29,9 +29,10 @@
     	<artifactId>tomcat7-maven-plugin</artifactId>
     	<version>2.1</version>
     	<configuration>
-			<port>4567</port>
-        	<path>/</path>
-		</configuration>
+		<port>4567</port>
+            	<path>/</path>
+		<fork>true</fork>
+	</configuration>
    </plugin>
     </plugins>
   </build>
