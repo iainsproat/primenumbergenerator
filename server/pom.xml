@@ -23,6 +23,13 @@
   		</configuration>
   		<version>3.0.0</version>
 	  </plugin>
+	  <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-war-plugin</artifactId>
+            <configuration>
+                <outputDirectory>./server/target/tomcat/webapps</outputDirectory>
+            </configuration>
+        </plugin>
     </plugins>
   </build>
   <dependencies>
