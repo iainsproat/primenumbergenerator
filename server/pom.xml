@@ -15,15 +15,21 @@
           <target>1.8</target>
         </configuration>
       </plugin>
-<plugin>            
+	  <plugin>            
  		<groupId>org.apache.maven.plugins</groupId>
   		<artifactId>maven-war-plugin</artifactId>
   		<configuration>
-    		<webXml>.\src\main\webapp\WEB-INF\web.xml</webXml>
-    		<outputDirectory>./server/target/tomcat/webapps</outputDirectory>      
+    	  <webXml>.\src\main\webapp\WEB-INF\web.xml</webXml>
+    	  <outputDirectory>./target/tomcat/webapps</outputDirectory>      
   		</configuration>
   		<version>3.0.0</version>
 	  </plugin>
+	  <plugin>
+    	<groupId>org.apache.tomcat.maven</groupId>
+    	<artifactId>tomcat7-maven-plugin</artifactId>
+    	<version>2.1</version>
+    	<configuration></configuration>
+   </plugin>
     </plugins>
   </build>
   <dependencies>

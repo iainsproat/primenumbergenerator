@@ -4,7 +4,6 @@ jdk:
   - oraclejdk8
 
 script:
-  - mvn test -B -f ./core/pom.xml
+  - mvn clean test -B -f ./core/pom.xml
   - mvn clean install -B -Dmaven.test.skip=true -f ./core/pom.xml
-  - mvn clean package -B -f ./server/pom.xml
-  - mvn tomcat:run -Dmaven.tomcat.port=4567 -f ./server/pom.xml
+  - mvn clean war:war tomcat:run -Dmaven.tomcat.port=4567 -f ./server/pom.xml
